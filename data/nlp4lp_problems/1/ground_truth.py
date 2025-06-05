@@ -11,7 +11,6 @@ dollars. Additionally, the number of van trips must be greater than the number
 of truck trips. The objective is to minimize the total number of trips.
 '''
 # Import necessary libraries
-import os
 import json
 from gurobipy import *
 
@@ -19,8 +18,7 @@ from gurobipy import *
 model = Model()
 
 # Load data 
-# with open(""/Users/gaowenzhi/Desktop/optimus-OR-paper/data/new_dataset/sample_datasets/139/parameters.json"", ""r"") as f:
-with open(os.path.join(os.path.dirname(__file__), "run_dev" ,"data.json"), "r") as f:
+with open(""/Users/gaowenzhi/Desktop/optimus-OR-paper/data/new_dataset/sample_datasets/139/parameters.json"", ""r"") as f:
     data = json.load(f)
     
 # @Def: definition of a target
@@ -28,22 +26,17 @@ with open(os.path.join(os.path.dirname(__file__), "run_dev" ,"data.json"), "r") 
         
 # Parameters 
 # @Parameter VanCapacity @Def: Capacity of a van in boxes per trip @Shape: [] 
-VanCapacity = data['BoxesPerVanTrip']
-# VanCapacity = data['VanCapacity']
+VanCapacity = data['VanCapacity']
 # @Parameter TruckCapacity @Def: Capacity of a truck in boxes per trip @Shape: [] 
-TruckCapacity = data['BoxesPerTruckTrip']
-# TruckCapacity = data['TruckCapacity']
+TruckCapacity = data['TruckCapacity']
 # @Parameter VanCost @Def: Cost per van trip in dollars @Shape: [] 
-VanCost = data['CostPerVanTrip']
-# VanCost = data['TruckCapacity']
+VanCost = data['TruckCapacity']
 # @Parameter TruckCost @Def: Cost per truck trip in dollars @Shape: [] 
-TruckCost = data['CostPerTruckTrip']
-# TruckCost = data['TruckCost']
+TruckCost = data['TruckCost']
 # @Parameter MinBoxes @Def: Minimum number of boxes to transport @Shape: [] 
 MinBoxes = data['MinBoxes']
 # @Parameter Budget @Def: Budget available in dollars @Shape: [] 
-Budget = data['MaxBudget']
-# Budget = data['Budget']
+Budget = data['Budget']
 
 # Variables 
 # @Variable VanTrips @Def: The number of van trips @Shape: [] 
@@ -74,5 +67,5 @@ variables['VanTrips'] = VanTrips.x
 variables['TruckTrips'] = TruckTrips.x
 solution['variables'] = variables
 solution['objective'] = model.objVal
-with open(os.path.join(os.path.dirname(__file__),'solution.json'), 'w') as f:
+with open('solution.json', 'w') as f:
     json.dump(solution, f, indent=4)

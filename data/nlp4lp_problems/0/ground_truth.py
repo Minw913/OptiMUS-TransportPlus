@@ -11,7 +11,6 @@ sandwich type is defined by ProfitPerSandwich. The objective is to determine the
 number of each sandwich type to produce in order to maximize total profit.
 '''
 # Import necessary libraries
-import os
 import json
 from gurobipy import *
 
@@ -20,7 +19,6 @@ model = Model()
 
 # Load data 
 with open(""/Users/gaowenzhi/Desktop/optimus-OR-paper/data/new_dataset/sample_datasets/2/parameters.json"", ""r"") as f:
-# with open(os.path.join(os.path.dirname(__file__), "run_dev" ,"data.json"), "r") as f:
     data = json.load(f)
     
 # @Def: definition of a target

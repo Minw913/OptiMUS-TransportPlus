@@ -39,21 +39,24 @@ Your task is to identify and extract parameters from the description. The parame
 
 {{
     "SYMBOL": {{
+        "value": "VALUE",
         "shape": "SHAPE",
         "definition": "DEFINITION",
         "type": "TYPE"
     }}
 }}
 
-Where SYMBOL is a string representing the parameter (use CamelCase), SHAPE is the shape of the parameter (e.g. "[]" for scalar, or "[N, M]" for a matrix of size N x M where N and M are scalar parameters), DEFINITION is a string describing the parameter, and type is one of "int", "float", or "binary".
+Where SYMBOL is a string representing the parameter (use CamelCase), VALUE is the value of the parameter, SHAPE is the shape of the parameter (e.g. "[]" for scalar, or "[N, M]" for a matrix of size N x M where N and M are scalar parameters), DEFINITION is a string describing the parameter, and type is one of "int", "float", or "binary".
 
 {{
     "NumberOfItems": {{
+        "value": "10",
         "shape": "[]",
         "definition": "The number of items in the inventory",
         "type": "int"
     }},
     "ItemValue": {{
+        "value": "[2, 3]",
         "shape": "[N]",
         "definition": "The value of each item in the inventory",
         "type": "float"

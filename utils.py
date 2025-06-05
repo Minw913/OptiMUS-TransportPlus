@@ -11,7 +11,7 @@ groq_key = "###"
 openai_key = os.getenv("OPENAI_API_KEY")
 # openai_org = "###"
 groq_client = Groq(api_key=groq_key)
-open_ai_client = openai.Client(api_key=openai_key, organization=openai_org)
+open_ai_client = openai.Client(api_key=openai_key) # organization=openai_org
 
 
 def extract_json_from_end(text):
@@ -187,8 +187,8 @@ def create_state(parent_dir, run_dir):
     params = get_params(desc, check=True)
     # print(params)
     # read params.json
-    with open(os.path.join(parent_dir, "params.json"), "r") as f:
-        params = json.load(f)
+    # with open(os.path.join(parent_dir, "params.json"), "r") as f:
+    #     params = json.load(f)
 
     data = {}
     for key in params:

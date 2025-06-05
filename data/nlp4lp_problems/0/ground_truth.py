@@ -11,6 +11,7 @@ sandwich type is defined by ProfitPerSandwich. The objective is to determine the
 number of each sandwich type to produce in order to maximize total profit.
 '''
 # Import necessary libraries
+import os
 import json
 from gurobipy import *
 
@@ -18,7 +19,8 @@ from gurobipy import *
 model = Model()
 
 # Load data 
-# with open(""/Users/gaowenzhi/Desktop/optimus-OR-paper/data/new_dataset/sample_datasets/2/parameters.json"", ""r"") as f:
+with open(""/Users/gaowenzhi/Desktop/optimus-OR-paper/data/new_dataset/sample_datasets/2/parameters.json"", ""r"") as f:
+# with open(os.path.join(os.path.dirname(__file__), "run_dev" ,"data.json"), "r") as f:
     data = json.load(f)
     
 # @Def: definition of a target
@@ -38,13 +40,13 @@ ProfitPerSandwich = data['ProfitPerSandwich']
 
 # Variables 
 # @Variable NumSandwiches @Def: The number of sandwiches to produce for each sandwich type @Shape: ['NumSandwichTypes'] 
-NumSandwiches = model.addVars(NumSandwichTypes, vtype=GRB.CONTINUOUS, name=""NumSandwiches"")
+NumSandwiches = model.addVars(NumSandwichTypes, vtype=GRB.CONTINUOUS, name="NumSandwiches")
 
 # Constraints 
 # @Constraint Constr_1 @Def: The total usage of eggs for producing regular and special sandwiches does not exceed the total available eggs.
-model.addConstr(quicksum(Required[0][i] * NumSandwiches[i] for i in range(NumSandwichTypes)) <= TotalAvailable[0], ""Constr_1"")
+model.addConstr(quicksum(Required[0][i] * NumSandwiches[i] for i in range(NumSandwichTypes)) <= TotalAvailable[0], "Constr_1")
 # @Constraint Constr_2 @Def: The total usage of bacon for producing regular and special sandwiches does not exceed the total available bacon.
-model.addConstr(quicksum(Required[1][i] * NumSandwiches[i] for i in range(NumSandwichTypes)) <= TotalAvailable[1], ""Constr_2"")
+model.addConstr(quicksum(Required[1][i] * NumSandwiches[i] for i in range(NumSandwichTypes)) <= TotalAvailable[1], "Constr_2")
 # @Constraint Constr_3 @Def: The number of regular and special sandwiches produced is non-negative.
 model.addConstrs((NumSandwiches[i] >= 0 for i in range(NumSandwichTypes)), 'NumSandwichesNonNegative')
 

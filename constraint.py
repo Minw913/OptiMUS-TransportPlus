@@ -121,6 +121,7 @@ prompt_constraints_redundant = """
 Take a deep breath and think step by step. You will be awarded a million dollars if you get this right.
 # """
 
+# Is telling the LLM 'Your colleague is suggesting' a trick for better answers?
 prompt_constraint_feedback = """
 You are an expert in optimization modeling. Here is the natural language description of an optimization problem:
 
@@ -166,7 +167,7 @@ Please take a deep breath and think step by step. You will be awarded a million 
 - Do not generate anything after the json file.
 """
 
-
+# Get the confidence score of the constraint
 def extract_score_constraint(desc, text, params, vars, constraints, c, logger):
     match = re.search(r"\d out of 5", text.lower())
     if match:
@@ -178,7 +179,7 @@ def extract_score_constraint(desc, text, params, vars, constraints, c, logger):
                 logger.log("---")
             return True, constraints
         else:
-            ask_LLM = True  # you can pass this as an argument to the function instead of hardcoding it
+            ask_LLM = True  # TODO you can pass this as an argument to the function instead of hardcoding it
             if logger:
                 logger.log("---")
                 logger.log(
@@ -204,7 +205,7 @@ def extract_score_constraint(desc, text, params, vars, constraints, c, logger):
                     logger.log(prompt)
                 llm_response = get_response(
                     prompt,
-                    model="gpt-4o",  # you can pass this as an argument to the function instead of hardcoding it
+                    model="gpt-4o-mini",  # TODO you can pass this as an argument to the function instead of hardcoding it
                 )
                 if logger:
                     logger.log("---")
@@ -240,7 +241,7 @@ def extract_score_constraint(desc, text, params, vars, constraints, c, logger):
     else:
         return False, None
 
-
+#? Seems wasnt used here
 def logic_check(text, params, constraints, c):
     try:
         json = extract_json_from_end(text)
@@ -385,6 +386,7 @@ def get_constraints(
                         logger.log("----")
                         logger.log(x)
                         logger.log("+--+")
+                    # call extract_score_constraint func
                     valid, res = q[1](desc, x, params, {}, constraints, c, logger)
                     if valid:
                         constraints = res

@@ -2,17 +2,21 @@ import os
 import json
 from groq import Groq
 import openai
+from dotenv import load_dotenv
+# Loading environment variables in .env file for API keys
+load_dotenv()
 
 groq_key = "###"
-openai_key = "###"
-openai_org = "###"
-
+# openai_key = "###"
+openai_key = os.getenv("OPENAI_API_KEY")
+# openai_org = "###"
 groq_client = Groq(api_key=groq_key)
 open_ai_client = openai.Client(api_key=openai_key, organization=openai_org)
 
 
 def extract_json_from_end(text):
-    
+    # First try to use alternate functions to handle
+    # If fails, the text may not be in Markdown format and requires more complex processing
     try:
         return extract_json_from_end_backup(text)
     except:
@@ -56,8 +60,8 @@ def extract_json_from_end(text):
 
     return jj
 
+# Extract JSON (```json format and remove comments from model's response
 def extract_json_from_end_backup(text):
-
     if "```json" in text:
         text = text.split("```json")[1]
         text = text.split("```")[0]
@@ -83,7 +87,7 @@ def extract_json_from_end_backup(text):
         ind_end = text.find("\n", ind_comment)
         text = text[:ind_comment] + text[ind_end + 1 :]
 
-    # convert to json format
+    # Convert JSON-formatted strings to Python objects
     jj = json.loads(text[ind + 1 :])
     return jj
 
@@ -109,7 +113,7 @@ def extract_list_from_end(text):
 
 
 # "llama3-70b-8192"
-def get_response(prompt, model="llama3-70b-8192"):
+def get_response(prompt, model="gpt-4o-mini"): # they used llama3-70b-8192 before
     if model == "llama3-70b-8192":
         client = groq_client
     else:
@@ -152,7 +156,7 @@ def shape_string_to_list(shape_string):
         shape_list = []
     return shape_list
 
-
+# Extract expressions with equal sign closed from text
 def extract_equal_sign_closed(text):
     ind_1 = text.find("=====")
     ind_2 = text.find("=====", ind_1 + 1)
@@ -172,8 +176,16 @@ class Logger:
         with open(self.file, "w") as f:
             f.write("")
 
-
+# create_state() modified by mw
 def create_state(parent_dir, run_dir):
+    # read the description
+    from parameters import get_params
+    with open (os.path.join(parent_dir, "desc.txt"), "r") as f:
+        desc = f.read()
+    
+    # First use LLM to extract params from the description
+    params = get_params(desc, check=True)
+    # print(params)
     # read params.json
     with open(os.path.join(parent_dir, "params.json"), "r") as f:
         params = json.load(f)
@@ -187,12 +199,29 @@ def create_state(parent_dir, run_dir):
     with open(os.path.join(run_dir, "data.json"), "w") as f:
         json.dump(data, f, indent=4)
 
-    # read the description
-    with open(os.path.join(parent_dir, "desc.txt"), "r") as f:
-        desc = f.read()
-
     state = {"description": desc, "parameters": params}
     return state
+
+# def create_state(parent_dir, run_dir):
+#     # read params.json
+#     with open(os.path.join(parent_dir, "params.json"), "r") as f:
+#         params = json.load(f)
+
+#     data = {}
+#     for key in params:
+#         data[key] = params[key]["value"]
+#         del params[key]["value"]
+
+#     # save the data file in the run_dir
+#     with open(os.path.join(run_dir, "data.json"), "w") as f:
+#         json.dump(data, f, indent=4)
+
+#     # read the description
+#     with open(os.path.join(parent_dir, "desc.txt"), "r") as f:
+#         desc = f.read()
+
+#     state = {"description": desc, "parameters": params}
+#     return state
 
 def get_labels(dir):
     with open(os.path.join(dir, "labels.json"), "r") as f:

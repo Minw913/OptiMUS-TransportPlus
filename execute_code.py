@@ -42,12 +42,13 @@ def execute_code(dir, code_filename):
     try:
         code_path = os.path.join(dir, code_filename)
         # Using Python's subprocess to execute the code as a separate process
+        # Used to read script output or determine whether it is successful
         result = subprocess.run(
             ["python", code_filename],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=dir,
+            capture_output=True, # Capture standard output and error output
+            text=True, # Convert to string
+            check=True, 
+            cwd=dir, 
         )
         # save result in a file
         with open(os.path.join(dir, "code_output.txt"), "w") as f:
@@ -94,6 +95,7 @@ def execute_and_debug(state, dir, model, logger, max_tries=3):
             code_file_path = os.path.join(dir, code_filename)
             with open(code_file_path, "w") as f:
                 f.write(code)
+            # seems redundant
             logger.log(f"Iteration {iteration + 1}: Error encountered. Debugging...")
     else:
         logger.log("Max iterations reached with errors remaining.")

@@ -126,7 +126,9 @@ qs = [
     ),
 ]
 
-
+# It seems that the pipeline didnt use get_vars() to generate variables from description
+# Contrarily it was directly obtained via modeling constraints
+# So the whole variables.py seems to be deprecated
 def get_vars(desc, params, vars=None, check=False):
     if not vars:
         res = get_response(

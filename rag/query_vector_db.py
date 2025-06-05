@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 from enum import Enum
@@ -10,8 +11,13 @@ from typing import List, Tuple, Dict, Union
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 
-openai_key = "###"
-openai_org = "###"
+from dotenv import load_dotenv
+# Loading environment variables in .env file for API keys
+load_dotenv()
+
+# openai_key = "###"
+openai_key = os.getenv("OPENAI_API_KEY")
+# openai_org = "###"
 
 class RAGFormat(Enum):
     PROBLEM_DESCRIPTION_OBJECTIVE = 1
@@ -32,7 +38,10 @@ def load_vector_db(vector_db_path: Path, model_name: str = "text-embedding-3-lar
     Returns:
         Chroma: The loaded vector database.
     """
-    embedding_function = OpenAIEmbeddings(model=model_name, openai_api_key=openai_key, organization=openai_org)
+    # Convert text to high-dimensional embedding vectors using OpenAI's text embedding model
+    # These vectors can be used to calculate similarity between texts
+    embedding_function = OpenAIEmbeddings(model=model_name, openai_api_key=openai_key )#organization=openai_org)
+    # Create a Chroma vector database and specify a persistent directory
     return Chroma(persist_directory=str(vector_db_path), embedding_function=embedding_function)
 
 problem_desciption_vector_db = load_vector_db(problem_descriptions_vector_db_path)

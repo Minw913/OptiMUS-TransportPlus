@@ -28,7 +28,8 @@ MODEL = "gpt-4o"
 RAG_MODE = None
 DEFAULT_LABELS = {"types": ["Mathematical Optimization"], "domains": ["Operations Management"]}
 
-def get_intro_latex_code_map(fname) -> Dict:
+# I think this is a simple demo to help understand the entire pipeline
+def get_intro_latex_code_map(fname) -> Dict: # Return value type annotation
     """
     Extract the internal OptiMUS data structure that maps natural language, LaTeX and code
     No data is required by this utility
@@ -37,7 +38,7 @@ def get_intro_latex_code_map(fname) -> Dict:
     
     run_dir = "."
     
-    # Extract parameters from the natural language description
+    # seems redudant
     with open(fname, "r") as f:
         desc = f.read()
         f.close()
@@ -50,11 +51,13 @@ def get_intro_latex_code_map(fname) -> Dict:
     
     # Construct the initial state
     state = {"description": desc, "parameters": params}
-    
+    # Save as json file
     save_state(state, "state_1_params.json")
 
+    # Create a Logger instance and bind to log.txt
     logger = Logger(f"log.txt")
     logger.reset()
+    # seems redudant
     logger = Logger(f"log.txt")
     logger.reset()
     

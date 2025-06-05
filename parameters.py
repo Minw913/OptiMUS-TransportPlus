@@ -6,6 +6,7 @@ from utils import extract_json_from_end, get_response, shape_string_to_list
 
 
 def extract_score(text, params, param):
+    # Extract confidence scores from model's response  
     match = re.search(r"\d out of 5", text.lower())
     if match:
         score = int(match.group()[0])
@@ -25,7 +26,8 @@ def extract_score(text, params, param):
     else:
         return False, None
 
-
+# I added the 'value' fields into the prompts
+# Its strange that they didnt include it previously but obtained params from external json file
 prompt_params = """
 You are an expert in optimization modeling. Here is the natural language description of an optimization problem:
 
@@ -103,11 +105,12 @@ qs = [
 
 
 def get_params(desc, check=True):
-
+    # Extract parameters from the problem description and verify each parameter
     k = 5
     while k > 0:
         try:
             res = get_response(prompt_params.format(description=desc))
+            # Extract JSON format parameters from the return result
             params = extract_json_from_end(res)
             break
         except:
@@ -122,6 +125,7 @@ def get_params(desc, check=True):
                 while k > 0:
                     prompt = prompt_params_q.format(
                         description=desc,
+                        # Convert Python objects to strings in JSON format
                         params=json.dumps(params, indent=4),
                         question=q,
                         targetParam=param,

@@ -68,6 +68,7 @@ def get_objective_formulation(
             case RAGMode.PROBLEM_LABELS:
                 assert labels is not None
                 rag = get_rag_from_problem_categories(desc, labels, RAGFormat.OBJECTIVE_FORMULATION, top_k=10)
+        #? rag tag wasnt be used here
         rag = f"-----\n{rag}-----\n\n"
     else:
         rag = ""
@@ -79,6 +80,7 @@ def get_objective_formulation(
                 constraint_df = pd.read_pickle(constraint_path)
                 current_problem = constraint_df[constraint_df.description == desc]
                 if not current_problem.empty:
+                    # problem_name is the identifier of the current problem description
                     problem_name = current_problem.iloc[0].problem_name
                 else:
                     problem_name = None

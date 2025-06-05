@@ -1,0 +1,14 @@
+# --- Environment & sensitive files ---
+/.env
+
+# --- Temporary Jupyter Notebook ---
+/temp.ipynb
+
+# --- Python byte-code cache ---
+*.pyc
+__pycache__/
+rag/__pycache__/
+*.sqlite3
+
+# --- local output folders ---
+run_*/

@@ -36,11 +36,13 @@ from gurobipy import Model, GRB, quicksum
 
 model = Model("OptimizationProblem")
 
-with open("data.json", "r") as f:
+with open(os.path.join(os.path.dirname(__file__),"data.json"), "r") as f:
     data = json.load(f)
 
 """
     )
+# with open("data.json", "r") as f:
+# with open(os.path.join(f"{dir}","data.json"), "r") as f:
 
     code.append("\n\n### Define the parameters\n")
     for symbol, v in state["parameters"].items():
@@ -76,14 +78,16 @@ with open("data.json", "r") as f:
     code.append(
         """
 if model.status == GRB.OPTIMAL:
-    with open("output_solution.txt", "w") as f:
+    with open(os.path.join(os.path.dirname(__file__),"output_solution.txt"), "w") as f:
         f.write(str(model.objVal))
     print("Optimal Objective Value: ", model.objVal)
 else:
-    with open("output_solution.txt", "w") as f:
+    with open(os.path.join(os.path.dirname(__file__),"output_solution.txt"), "w") as f:
         f.write(model.status)
 """
     )
+# with open("output_solution.txt", "w") as f:
+# with open(os.path.join(f"{dir}","output_solution.txt"), "w") as f:
 
     code_str = "\n".join(code)
 

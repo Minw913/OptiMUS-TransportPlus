@@ -57,10 +57,11 @@ def get_objective(
     model,
     check=False,
     logger=None,
-    rag_mode: RAGMode | None = None,
+    rag_mode: RAGMode | None = None, # Type Hint
     labels: dict | None = None,
 ):
     if isinstance(rag_mode, RAGMode):
+        # Pattern Matching Syntax
         match rag_mode:
             case RAGMode.PROBLEM_DESCRIPTION | RAGMode.CONSTRAINT_OR_OBJECTIVE:
                 rag = get_rag_from_problem_description(desc, RAGFormat.PROBLEM_DESCRIPTION_OBJECTIVE, top_k=5)

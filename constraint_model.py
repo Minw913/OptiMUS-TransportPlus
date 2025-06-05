@@ -10,17 +10,22 @@ def extract_formulation_from_end(text):
     ind_1 = text.find('"FORMULATION":')
 
     iloop = 0
+    # Safety mechanism to prevent infinite loops
     iloop_max = 1e05
 
     if "$" not in text:
         raise Exception("No formulation found")
 
+    # Start at "FORMULATION" and move right until the first $ symbol is found
+    # This is for robustness of the code. The LLM output may not be standardized enough
+    # There may be spaces or line breaks between "FORMULATION": and $
     while text[ind_1] != "$":
         ind_1 += 1
         iloop += 1
         if iloop > iloop_max:
             raise Exception("No formulation found")
 
+    # From "NEW VARIABLES" move left until the second $ symbol is found
     ind_2 = text.find("NEW VARIABLES")
     while text[ind_2] != "$":
         ind_2 -= 1
@@ -28,11 +33,14 @@ def extract_formulation_from_end(text):
         if iloop > iloop_max:
             raise Exception("No formulation found")
 
+    # Find the formula between constraint $...$
     formulation = text[ind_1 : ind_2 + 1].strip()
 
+    # Remove the formulation part to avoid $ interference
     text = text[:ind_1] + text[ind_2 + 1 :]
 
     ind_1 = text.find('"AUXILIARY CONSTRAINTS":')
+    # Find the first $ on the left
     while text[ind_1] != "$":
         ind_1 += 1
         if ind_1 > len(text) - 1:
@@ -48,15 +56,19 @@ def extract_formulation_from_end(text):
 
             ind_2 = ind_1 + 1
 
+            # Avoid only blank $$ between ind_1 and ind_2
             while ind_2 + 2 < len(text) and text[ind_2 : ind_2 + 2] != '$"':
                 ind_2 += 1
                 iloop += 1
                 if iloop > iloop_max:
                     break
                     raise Exception("No formulation found")
+            # Add every extracted auxiliary constraint to the list
             auxiliaries.append(text[ind_1 : ind_2 + 1].strip())
+            # Remove the extracted auxiliary constraint
             text = text[:ind_1] + text[ind_2 + 1 :]
 
+            # There may be multiple auxiliary constraints, continue to look for the next
             while ind_1 < len(text) - 1 and text[ind_1] != "$":
                 ind_1 += 1
                 if ind_1 > len(text) - 1:
@@ -68,9 +80,12 @@ def extract_formulation_from_end(text):
 
             if ind_1 > len(text) - 1:
                 break
+    # After extracting the auxiliary constraint, only NEW VARIABLES variables json is left
     json_res = extract_json_from_end(text)
 
+    #? Why do we need to filter out auxiliary constraints with length less than 5?
     auxiliaries = [a for a in auxiliaries if len(a) > 5]
+    # Replace the original text in json with formulaation
     json_res["FORMULATION"] = formulation
     json_res["AUXILIARY CONSTRAINTS"] = auxiliaries
 
@@ -81,6 +96,8 @@ def extract_formulation_from_end(text):
     )
 
 
+# Guide and example for constraint generation, especially for auxiliary constraints
+# But I don't understand the example here very well, does the second constraint look more like a objective?
 text = """
 To model the optimization constraint "The amount of stock held from one period to the next incurs a holding cost," we need to first understand that the holding cost is a cost incurred for maintaining stock in the warehouse from one period to the next. This cost is proportional to the amount of stock held and the holding cost per unit.
 
@@ -115,12 +132,13 @@ Explanation:
 2. **NEW VARIABLES**: No new variables are introduced.
 
 3. **AUXILIARY CONSTRAINTS**:
-   - The first auxiliary constraint shows the objective function incorporating the holding cost into the profit calculation.
-   - The second auxiliary constraint states the maximization of profit.
+    - The first auxiliary constraint shows the objective function incorporating the holding cost into the profit calculation.
+    - The second auxiliary constraint states the maximization of profit.
 
 Note: The initial constraint provided seems to be more of a statement for incorporating holding costs into the profit function rather than a strict boundary constraint, and thus is reflected appropriately in the auxiliary constraints.
 """
 
+# In addition to extracting constraints, variables are also extracted directly from here
 prompt_constraints_model = """
 You are an expert in optimization modeling. Here is the natural language description of an optimization problem:
 
@@ -210,6 +228,7 @@ Consider this constraint:
 """
 
 
+# seems deprecated 
 prompt_constraints_aux = """
 You are an expert in optimization modeling. Here is the natural language description of an optimization problem:
 
@@ -302,6 +321,7 @@ qs = [
     """,
         # extract_score,
         # dummy function
+        #? strange here
         lambda x, params, vars, constraints, c: (False, constraints),
     ),
     (
@@ -434,6 +454,7 @@ def get_constraint_formulations(
 
     if check:
         for c in formulated_constraints.copy():
+            #? Its strange that here used the first question with always 'False' answer
             for q in qs[0:1]:
                 k = 1
                 while k > 0:
